@@ -49,7 +49,7 @@ function run() {
             const version = core.getInput('version');
             const tags = core.getInput('tags');
             const changlogs = (0, read_rush_1.readChangelogOfVersion)(version, rushPath, tags ? tags.split(',') : undefined, blackList ? blackList.split(',') : undefined);
-            const mdStr = (0, read_rush_1.convertLogsToMarkdown)(changlogs, version);
+            const mdStr = (0, read_rush_1.convertLogsToMarkdown)(changlogs);
             core.setOutput('markdown', mdStr);
         }
         catch (error) {
@@ -208,7 +208,7 @@ const logTypeMeta = [
         emoji: '🔖'
     }
 ];
-const convertLogsToMarkdown = (logs, version) => {
+const convertLogsToMarkdown = (logs) => {
     let markdown = '';
     const map = {};
     const reg = /^(feat|fix|docs|style|refactor|perf|test|chore|revert)(\((.+)\))?(!)?: (.+)$/im;
@@ -257,10 +257,12 @@ const convertLogsToMarkdown = (logs, version) => {
             }
         });
     }
-    if (markdown && version) {
-        const date = new Date();
-        return `# v${version}(${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()})\n${markdown}`;
-    }
+    // if (markdown && version) {
+    //   const date = new Date()
+    //   return `# v${version}(${date.getFullYear()}-${
+    //     date.getMonth() + 1
+    //   }-${date.getDate()})\n${markdown}`
+    // }
     return markdown;
 };
 exports.convertLogsToMarkdown = convertLogsToMarkdown;

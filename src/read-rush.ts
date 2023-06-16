@@ -172,10 +172,7 @@ const logTypeMeta = [
   }
 ]
 
-export const convertLogsToMarkdown = (
-  logs: LogItem[],
-  version?: string
-): string => {
+export const convertLogsToMarkdown = (logs: LogItem[]): string => {
   let markdown = ''
   const map: Record<
     string,
@@ -235,13 +232,13 @@ export const convertLogsToMarkdown = (
     })
   }
 
-  if (markdown && version) {
-    const date = new Date()
+  // if (markdown && version) {
+  //   const date = new Date()
 
-    return `# v${version}(${date.getFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()})\n${markdown}`
-  }
+  //   return `# v${version}(${date.getFullYear()}-${
+  //     date.getMonth() + 1
+  //   }-${date.getDate()})\n${markdown}`
+  // }
 
   return markdown
 }
