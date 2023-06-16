@@ -232,9 +232,5 @@ export const convertLogsToMarkdown = (logs: LogItem[]): string => {
     })
   }
 
-  if (markdown) {
-    core.info(`[info] generat markdown: ${markdown} `)
-  }
-
   return markdown
 }
