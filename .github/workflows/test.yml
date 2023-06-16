@@ -22,3 +22,7 @@ jobs:
       - uses: ./
         with:
           rush_path: './__tests__/test-rush'
+        id: changlog
+
+      - name: Show markdown
+      run: echo "Version is ${{ steps.changlog.outputs.markdown }}"

@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import {join} from 'path'
 import {readFileSync} from 'fs'
 
@@ -35,6 +36,8 @@ interface LogItem {
 
 export const findJsonFile = <T>(path: string, filename: string): T | null => {
   try {
+    const filePath = join(path, filename)
+    core.info(`[info] read json file: ${filePath}`)
     return JSON.parse(readFileSync(join(path, filename)).toString())
   } catch (e) {
     return null
@@ -74,6 +77,11 @@ export const readChangelogOfVersion = (
   const logs: LogItem[] = []
   const changlogInfos = getPathOfPackages(rushPath, filterTags, blackList)
   if (changlogInfos && changlogInfos.length) {
+    core.info(
+      `[info] read json file: \n ${changlogInfos
+        .map(entry => `- ${entry.path}/${entry.fileName}`)
+        .join('\n')}`
+    )
     // eslint-disable-next-line github/array-foreach
     changlogInfos.forEach(entry => {
       const changelog = findJsonFile<RushChangelogJson>(

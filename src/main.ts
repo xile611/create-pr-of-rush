@@ -13,6 +13,7 @@ async function run(): Promise<void> {
       tags ? tags.split(',') : undefined,
       blackList ? blackList.split(',') : undefined
     )
+
     const mdStr = convertLogsToMarkdown(changlogs)
 
     core.setOutput('markdown', mdStr)
