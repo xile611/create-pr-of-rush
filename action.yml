@@ -1,5 +1,5 @@
 name: 'Collect changelog of rush'
-description: 'Collect changelog from all the changlog file of a rush monorepo package, by default all the changlog of package which has `shouldPublish ='true'' will be collected`'
+description: 'Collect changelog from all the changlog file of a rush monorepo package, by default all the changlog of package which has shouldPublish = true will be collected'
 author: 'xile611'
 inputs:
   version:
