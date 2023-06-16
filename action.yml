@@ -15,7 +15,6 @@ inputs:
   tags:
     required: false
     description: The tags of packages, use comma to join multi package tag
-    default: './'
 runs:
   using: 'node16'
   main: 'dist/index.js'
