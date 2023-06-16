@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {
+      "packageName": "rush-pkg-0",
+      "projectFolder": "./rush-pkg-0",
+      "tags": ["package"],
+      "shouldPublish": true
+    },
+    {
+      "packageName": "rush-pkg-1",
+      "projectFolder": "./rush-pkg-1",
+      "tags": ["package"],
+      "shouldPublish": true
+    }
+  ]
+}

@@ -1,16 +1,21 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {readChangelogOfVersion, convertLogsToMarkdown} from './read-rush'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const rushPath = core.getInput('rush_path')
+    const blackList = core.getInput('black_list')
+    const version = core.getInput('version')
+    const tags = core.getInput('tags')
+    const changlogs = readChangelogOfVersion(
+      version,
+      rushPath,
+      tags ? tags.split(',') : undefined,
+      blackList ? blackList.split(',') : undefined
+    )
+    const mdStr = convertLogsToMarkdown(changlogs)
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    core.setOutput('markdown', mdStr)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

@@ -40,16 +40,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
-const wait_1 = __nccwpck_require__(817);
+const read_rush_1 = __nccwpck_require__(385);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const ms = core.getInput('milliseconds');
-            core.debug(`Waiting ${ms} milliseconds ...`); // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-            core.debug(new Date().toTimeString());
-            yield (0, wait_1.wait)(parseInt(ms, 10));
-            core.debug(new Date().toTimeString());
-            core.setOutput('time', new Date().toTimeString());
+            const rushPath = core.getInput('rush_path');
+            const blackList = core.getInput('black_list');
+            const version = core.getInput('version');
+            const tags = core.getInput('tags');
+            const changlogs = (0, read_rush_1.readChangelogOfVersion)(version, rushPath, tags ? tags.split(',') : undefined, blackList ? blackList.split(',') : undefined);
+            const mdStr = (0, read_rush_1.convertLogsToMarkdown)(changlogs);
+            core.setOutput('markdown', mdStr);
         }
         catch (error) {
             if (error instanceof Error)
@@ -62,33 +63,167 @@ run();
 
 /***/ }),
 
-/***/ 817:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ 385:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = void 0;
-function wait(milliseconds) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise(resolve => {
-            if (isNaN(milliseconds)) {
-                throw new Error('milliseconds not a number');
-            }
-            setTimeout(() => resolve('done!'), milliseconds);
-        });
+exports.convertLogsToMarkdown = exports.readChangelogOfVersion = exports.getPathOfPackages = exports.findJsonFile = void 0;
+const path_1 = __nccwpck_require__(17);
+const fs_1 = __nccwpck_require__(147);
+const findJsonFile = (path, filename) => {
+    try {
+        return JSON.parse((0, fs_1.readFileSync)((0, path_1.join)(path, filename)).toString());
+    }
+    catch (e) {
+        return null;
+    }
+};
+exports.findJsonFile = findJsonFile;
+const getPathOfPackages = (rushPath = './', filterTags, blackList) => {
+    var _a;
+    const rushJson = (0, exports.findJsonFile)(rushPath, 'rush.json');
+    const packages = ((_a = rushJson === null || rushJson === void 0 ? void 0 : rushJson.projects) !== null && _a !== void 0 ? _a : []).filter(project => {
+        return (project.shouldPublish &&
+            (!filterTags ||
+                !filterTags.length ||
+                (project.tags && project.tags.some(tag => filterTags.includes(tag)))) &&
+            (!blackList ||
+                !blackList.length ||
+                !blackList.includes(project.packageName)));
     });
-}
-exports.wait = wait;
+    return packages.map(project => ({
+        path: (0, path_1.join)(rushPath, project.projectFolder),
+        fileName: 'CHANGELOG.json'
+    }));
+};
+exports.getPathOfPackages = getPathOfPackages;
+const readChangelogOfVersion = (version, rushPath, filterTags, blackList) => {
+    const logs = [];
+    const changlogInfos = (0, exports.getPathOfPackages)(rushPath, filterTags, blackList);
+    if (changlogInfos && changlogInfos.length) {
+        // eslint-disable-next-line github/array-foreach
+        changlogInfos.forEach(entry => {
+            var _a, _b, _c, _d, _e, _f;
+            const changelog = (0, exports.findJsonFile)(entry.path, entry.fileName);
+            if (changelog &&
+                changelog.name &&
+                changelog.entries &&
+                changelog.entries.length) {
+                const validateEntry = version
+                    ? changelog.entries.find(logEntry => logEntry.version === version)
+                    : changelog.entries[0];
+                if (validateEntry) {
+                    logs.push({
+                        pkgName: changelog.name,
+                        comments: [
+                            ...((_b = (_a = validateEntry.comments) === null || _a === void 0 ? void 0 : _a.patch) !== null && _b !== void 0 ? _b : []),
+                            ...((_d = (_c = validateEntry.comments) === null || _c === void 0 ? void 0 : _c.minor) !== null && _d !== void 0 ? _d : []),
+                            ...((_f = (_e = validateEntry.comments) === null || _e === void 0 ? void 0 : _e.major) !== null && _f !== void 0 ? _f : [])
+                        ].map(comment => comment.comment)
+                    });
+                }
+            }
+        });
+    }
+    return logs;
+};
+exports.readChangelogOfVersion = readChangelogOfVersion;
+const logTypeMeta = [
+    {
+        type: 'feat',
+        emoji: '🆕'
+    },
+    {
+        type: 'fix',
+        emoji: '🐛'
+    },
+    {
+        type: 'refactor',
+        emoji: '🔨'
+    },
+    {
+        type: 'perf',
+        emoji: '⚡'
+    },
+    {
+        type: 'test',
+        emoji: '✅ '
+    },
+    {
+        type: 'chore',
+        emoji: '🔧'
+    },
+    {
+        type: 'revert',
+        emoji: '🔙'
+    },
+    {
+        type: 'docs',
+        emoji: '📖'
+    },
+    {
+        type: 'style',
+        emoji: '💄'
+    },
+    {
+        type: 'other',
+        emoji: '🔖'
+    }
+];
+const convertLogsToMarkdown = (logs) => {
+    let markdown = '';
+    const map = {};
+    const reg = /^(feat|fix|docs|style|refactor|perf|test|chore|revert)(\((.+)\))?(!)?: (.+)$/g;
+    if (logs && logs.length) {
+        // eslint-disable-next-line github/array-foreach
+        logs.forEach(log => {
+            if (log.comments && log.comments.length) {
+                // eslint-disable-next-line github/array-foreach
+                log.comments.forEach(comment => {
+                    const matches = reg.exec(comment);
+                    if (matches) {
+                        const type = matches[1];
+                        const scope = matches[3];
+                        const isBreaking = !!matches[4];
+                        const subject = matches[5];
+                        if (!map[type]) {
+                            map[type] = [];
+                        }
+                        map[type].push({
+                            scope: scope !== null && scope !== void 0 ? scope : log.pkgName,
+                            isBreaking,
+                            subject
+                        });
+                    }
+                    else {
+                        if (!map['other']) {
+                            map['other'] = [];
+                        }
+                        map['other'].push({
+                            scope: log.pkgName,
+                            isBreaking: false,
+                            subject: comment
+                        });
+                    }
+                });
+            }
+        });
+        // eslint-disable-next-line github/array-foreach
+        logTypeMeta.forEach(meta => {
+            if (map[meta.type] && map[meta.type].length) {
+                markdown += `## ${meta.emoji} ${meta.type} \n`;
+                // eslint-disable-next-line github/array-foreach
+                map[meta.type].forEach(item => {
+                    markdown += `- ${item.isBreaking ? '**BREAKING** ' : ''}**${item.scope}**: ${item.subject}\n`;
+                });
+            }
+        });
+    }
+    return markdown;
+};
+exports.convertLogsToMarkdown = convertLogsToMarkdown;
 
 
 /***/ }),

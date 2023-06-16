@@ -1,0 +1,29 @@
+{
+  "name": "rush-pkg-0",
+  "entries": [
+    {
+      "version": "0.0.10",
+      "tag": "rush-pkg-0_v0.0.10",
+      "date": "Wed, 07 Jun 2023 08:59:10 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "init"
+          }
+        ]
+      }
+    },
+    {
+      "version": "0.0.9",
+      "tag": "rush-pkg-0_v0.0.9",
+      "date": "Wed, 07 Jun 2023 08:59:10 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "fix: fix the bug of wrong use a util function"
+          }
+        ]
+      }
+    }
+  ]
+}

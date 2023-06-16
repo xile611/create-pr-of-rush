@@ -1,11 +1,21 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Collect changelog of rush'
+description: 'Collect changelog from all the changlog file of a rush monorepo package, by default all the changlog of package which has `shouldPublish ='true'' will be collected`'
+author: 'xile611'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  version:
+    required: false
+    description: The version of changelog, if not specified, the lastest changelog will be collected
+  rush_path:
+    required: false
+    description: The root path of a rush project
+    default: './'
+  black_list:
+    required: false
+    description: The black list of packageName, use comma to join multi package name
+  tags:
+    required: false
+    description: The tags of packages, use comma to join multi package tag
+    default: './'
 runs:
   using: 'node16'
   main: 'dist/index.js'
