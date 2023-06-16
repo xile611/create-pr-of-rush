@@ -257,6 +257,9 @@ const convertLogsToMarkdown = (logs) => {
             }
         });
     }
+    if (markdown) {
+        core.info(`[info] generat markdown: ${markdown} `);
+    }
     return markdown;
 };
 exports.convertLogsToMarkdown = convertLogsToMarkdown;
