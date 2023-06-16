@@ -263,7 +263,7 @@ export const convertLogsToSimpleString = (logs: LogItem[]): string => {
 
         // eslint-disable-next-line github/array-foreach
         map[meta.type].forEach(item => {
-          strings.push(`- ${item.scope}: ${item.subject}`)
+          strings.push(`${item.scope}:${item.subject}`)
         })
       }
     })

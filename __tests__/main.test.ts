@@ -1,7 +1,8 @@
 import {
   readChangelogOfVersion,
   getPathOfPackages,
-  convertLogsToMarkdown
+  convertLogsToMarkdown,
+  convertLogsToSimpleString
 } from '../src/read-rush'
 import * as process from 'process'
 import * as cp from 'child_process'
@@ -43,6 +44,22 @@ test('convertLogsToMarkdown', () => {
   expect(md).toBe(`## 🐛 fix 
 - **rush-pkg-0**: fix the bug of wrong use a util function
 `)
+})
+
+test('convertLogsToSimpleString', () => {
+  const changlog = readChangelogOfVersion('0.0.9', './__tests__/test-rush')
+
+  expect(changlog).toEqual([
+    {
+      pkgName: 'rush-pkg-0',
+      comments: ['fix: fix the bug of wrong use a util function']
+    }
+  ])
+
+  const str = convertLogsToSimpleString(changlog)
+
+  expect(str).toBe(`fix
+rush-pkg-0:fix the bug of wrong use a util function`)
 })
 
 // shows how the runner will run a javascript action with env / stdout protocol
