@@ -14,7 +14,7 @@ async function run(): Promise<void> {
       blackList ? blackList.split(',') : undefined
     )
 
-    const mdStr = convertLogsToMarkdown(changlogs)
+    const mdStr = convertLogsToMarkdown(changlogs, version)
 
     core.setOutput('markdown', mdStr)
   } catch (error) {

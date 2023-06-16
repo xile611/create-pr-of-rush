@@ -172,14 +172,17 @@ const logTypeMeta = [
   }
 ]
 
-export const convertLogsToMarkdown = (logs: LogItem[]): string => {
+export const convertLogsToMarkdown = (
+  logs: LogItem[],
+  version?: string
+): string => {
   let markdown = ''
   const map: Record<
     string,
     {scope: string; isBreaking: boolean; subject: string}[]
   > = {}
   const reg =
-    /^(feat|fix|docs|style|refactor|perf|test|chore|revert)(\((.+)\))?(!)?: (.+)$/g
+    /^(feat|fix|docs|style|refactor|perf|test|chore|revert)(\((.+)\))?(!)?: (.+)$/im
 
   if (logs && logs.length) {
     // eslint-disable-next-line github/array-foreach
@@ -230,6 +233,14 @@ export const convertLogsToMarkdown = (logs: LogItem[]): string => {
         })
       }
     })
+  }
+
+  if (markdown && version) {
+    const date = new Date()
+
+    return `# v${version}(${date.getFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()})\n${markdown}`
   }
 
   return markdown

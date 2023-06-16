@@ -21,6 +21,9 @@
         "patch": [
           {
             "comment": "fix: fix the bug of wrong use a util function"
+          },
+          {
+            "comment": "fix: fix the bug of one"
           }
         ]
       }
