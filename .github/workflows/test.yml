@@ -42,12 +42,12 @@ jobs:
           body: '${{ steps.changelog.outputs.simple_string }}'
 
       - name: Create Pull Request
-          uses: dustinirving/create-pr@v1.0.2
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            title: '[Auto release] release v2'
-            base: 'main'
-            head: ${{ github.ref_name }}
-            labels: release
-            reviewers: xile611
-            body: '## test'
+        uses: dustinirving/create-pr@v1.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: '[Auto release] release v2'
+          base: 'main'
+          head: ${{ github.ref_name }}
+          labels: release
+          reviewers: xile611
+          body: '## test'
