@@ -27,6 +27,7 @@ jobs:
 
       - name: Show markdown
         run: echo "Version is ${{ steps.changlog.outputs.markdown }}"
+      - run: echo "Version is ${{ steps.changlog.outputs.simple_string }}"
 
 
       - name: Create Pull Request
