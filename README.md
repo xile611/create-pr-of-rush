@@ -4,7 +4,7 @@
 
 ### examples
 
-- Case 1: read the version from './package.json'
+- Case 1: collection changlog of latest changlog
 
 ```
 name: your workflow
