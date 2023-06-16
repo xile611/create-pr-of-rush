@@ -27,3 +27,15 @@ jobs:
 
       - name: Show markdown
         run: echo "Version is ${{ steps.changlog.outputs.markdown }}"
+
+
+      - name: Create Pull Request
+        uses: dustinirving/create-pr@v1.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: '[Auto release] release'
+          base: 'main'
+          head: ${{ github.ref_name }}
+          labels: release
+          reviewers: xile611
+          body: '${{ steps.changelog.outputs.markdown }}'

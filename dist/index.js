@@ -51,6 +51,7 @@ function run() {
             const changlogs = (0, read_rush_1.readChangelogOfVersion)(version, rushPath, tags ? tags.split(',') : undefined, blackList ? blackList.split(',') : undefined);
             const mdStr = (0, read_rush_1.convertLogsToMarkdown)(changlogs);
             core.setOutput('markdown', mdStr);
+            core.setOutput('simple_string', (0, read_rush_1.convertLogsToSimpleString)(changlogs));
         }
         catch (error) {
             if (error instanceof Error)
@@ -92,7 +93,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.convertLogsToMarkdown = exports.readChangelogOfVersion = exports.getPathOfPackages = exports.findJsonFile = void 0;
+exports.convertLogsToSimpleString = exports.convertLogsToMarkdown = exports.formatLogs = exports.readChangelogOfVersion = exports.getPathOfPackages = exports.findJsonFile = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const path_1 = __nccwpck_require__(17);
 const fs_1 = __nccwpck_require__(147);
@@ -208,8 +209,7 @@ const logTypeMeta = [
         emoji: '🔖'
     }
 ];
-const convertLogsToMarkdown = (logs) => {
-    let markdown = '';
+const formatLogs = (logs) => {
     const map = {};
     const reg = /^(feat|fix|docs|style|refactor|perf|test|chore|revert)(\((.+)\))?(!)?: (.+)$/g;
     if (logs && logs.length) {
@@ -246,6 +246,14 @@ const convertLogsToMarkdown = (logs) => {
                 });
             }
         });
+    }
+    return map;
+};
+exports.formatLogs = formatLogs;
+const convertLogsToMarkdown = (logs) => {
+    let markdown = '';
+    if (logs && logs.length) {
+        const map = (0, exports.formatLogs)(logs);
         // eslint-disable-next-line github/array-foreach
         logTypeMeta.forEach(meta => {
             if (map[meta.type] && map[meta.type].length) {
@@ -263,6 +271,27 @@ const convertLogsToMarkdown = (logs) => {
     return markdown;
 };
 exports.convertLogsToMarkdown = convertLogsToMarkdown;
+const convertLogsToSimpleString = (logs) => {
+    const strings = [];
+    if (logs && logs.length) {
+        const map = (0, exports.formatLogs)(logs);
+        // eslint-disable-next-line github/array-foreach
+        logTypeMeta.forEach(meta => {
+            if (map[meta.type] && map[meta.type].length) {
+                strings.push(meta.type);
+                // eslint-disable-next-line github/array-foreach
+                map[meta.type].forEach(item => {
+                    strings.push(`- ${item.scope}: ${item.subject}`);
+                });
+            }
+        });
+    }
+    if (strings.length) {
+        core.info(`[info] generat string: ${strings.join('\n')} `);
+    }
+    return strings.join('\n');
+};
+exports.convertLogsToSimpleString = convertLogsToSimpleString;
 
 
 /***/ }),

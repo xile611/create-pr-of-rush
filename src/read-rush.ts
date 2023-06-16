@@ -172,8 +172,9 @@ const logTypeMeta = [
   }
 ]
 
-export const convertLogsToMarkdown = (logs: LogItem[]): string => {
-  let markdown = ''
+export const formatLogs = (
+  logs: LogItem[]
+): Record<string, {scope: string; isBreaking: boolean; subject: string}[]> => {
   const map: Record<
     string,
     {scope: string; isBreaking: boolean; subject: string}[]
@@ -217,6 +218,16 @@ export const convertLogsToMarkdown = (logs: LogItem[]): string => {
         })
       }
     })
+  }
+
+  return map
+}
+
+export const convertLogsToMarkdown = (logs: LogItem[]): string => {
+  let markdown = ''
+
+  if (logs && logs.length) {
+    const map = formatLogs(logs)
 
     // eslint-disable-next-line github/array-foreach
     logTypeMeta.forEach(meta => {
@@ -237,4 +248,30 @@ export const convertLogsToMarkdown = (logs: LogItem[]): string => {
   }
 
   return markdown
+}
+
+export const convertLogsToSimpleString = (logs: LogItem[]): string => {
+  const strings: string[] = []
+
+  if (logs && logs.length) {
+    const map = formatLogs(logs)
+
+    // eslint-disable-next-line github/array-foreach
+    logTypeMeta.forEach(meta => {
+      if (map[meta.type] && map[meta.type].length) {
+        strings.push(meta.type)
+
+        // eslint-disable-next-line github/array-foreach
+        map[meta.type].forEach(item => {
+          strings.push(`- ${item.scope}: ${item.subject}`)
+        })
+      }
+    })
+  }
+
+  if (strings.length) {
+    core.info(`[info] generat string: ${strings.join('\n')} `)
+  }
+
+  return strings.join('\n')
 }

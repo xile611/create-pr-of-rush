@@ -1,5 +1,9 @@
 import * as core from '@actions/core'
-import {readChangelogOfVersion, convertLogsToMarkdown} from './read-rush'
+import {
+  readChangelogOfVersion,
+  convertLogsToMarkdown,
+  convertLogsToSimpleString
+} from './read-rush'
 
 async function run(): Promise<void> {
   try {
@@ -17,6 +21,7 @@ async function run(): Promise<void> {
     const mdStr = convertLogsToMarkdown(changlogs)
 
     core.setOutput('markdown', mdStr)
+    core.setOutput('simple_string', convertLogsToSimpleString(changlogs))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
