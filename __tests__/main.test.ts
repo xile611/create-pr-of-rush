@@ -34,7 +34,10 @@ test('convertLogsToMarkdown', () => {
   expect(changlog).toEqual([
     {
       pkgName: 'rush-pkg-0',
-      comments: ['fix: fix the bug of wrong use a util function']
+      comments: [
+        'fix: fix the bug of wrong use a util function',
+        'fix: fix the bug of one'
+      ]
     }
   ])
 
@@ -42,6 +45,7 @@ test('convertLogsToMarkdown', () => {
 
   expect(md).toBe(`## 🐛 fix 
 - **rush-pkg-0**: fix the bug of wrong use a util function
+- **rush-pkg-0**: fix the bug of one
 `)
 })
 
