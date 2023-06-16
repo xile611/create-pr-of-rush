@@ -134,25 +134,32 @@ const readChangelogOfVersion = (version, rushPath, filterTags, blackList) => {
             .join('\n')}`);
         // eslint-disable-next-line github/array-foreach
         changlogInfos.forEach(entry => {
-            var _a, _b, _c, _d, _e, _f;
+            var _a, _b, _c, _d, _e, _f, _g;
             const changelog = (0, exports.findJsonFile)(entry.path, entry.fileName);
             if (changelog &&
                 changelog.name &&
                 changelog.entries &&
                 changelog.entries.length) {
+                core.info(`[info] get changelog of ${changelog === null || changelog === void 0 ? void 0 : changelog.name} which has entries[ ${(_a = changelog === null || changelog === void 0 ? void 0 : changelog.entries) === null || _a === void 0 ? void 0 : _a.length} ]`);
                 const validateEntry = version
                     ? changelog.entries.find(logEntry => logEntry.version === version)
                     : changelog.entries[0];
+                if (version && !validateEntry) {
+                    core.info(`[info] can't get log version ${version}, the latest log version is ${changelog.entries[0].version}`);
+                }
                 if (validateEntry) {
                     logs.push({
                         pkgName: changelog.name,
                         comments: [
-                            ...((_b = (_a = validateEntry.comments) === null || _a === void 0 ? void 0 : _a.patch) !== null && _b !== void 0 ? _b : []),
-                            ...((_d = (_c = validateEntry.comments) === null || _c === void 0 ? void 0 : _c.minor) !== null && _d !== void 0 ? _d : []),
-                            ...((_f = (_e = validateEntry.comments) === null || _e === void 0 ? void 0 : _e.major) !== null && _f !== void 0 ? _f : [])
+                            ...((_c = (_b = validateEntry.comments) === null || _b === void 0 ? void 0 : _b.patch) !== null && _c !== void 0 ? _c : []),
+                            ...((_e = (_d = validateEntry.comments) === null || _d === void 0 ? void 0 : _d.minor) !== null && _e !== void 0 ? _e : []),
+                            ...((_g = (_f = validateEntry.comments) === null || _f === void 0 ? void 0 : _f.major) !== null && _g !== void 0 ? _g : [])
                         ].map(comment => comment.comment)
                     });
                 }
+            }
+            else {
+                core.info(`[info] can't get changelog of ${entry.path}/${entry.fileName}`);
             }
         });
     }

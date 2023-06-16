@@ -95,9 +95,18 @@ export const readChangelogOfVersion = (
         changelog.entries &&
         changelog.entries.length
       ) {
+        core.info(
+          `[info] get changelog of ${changelog?.name} which has entries[ ${changelog?.entries?.length} ]`
+        )
         const validateEntry = version
           ? changelog.entries.find(logEntry => logEntry.version === version)
           : changelog.entries[0]
+
+        if (version && !validateEntry) {
+          core.info(
+            `[info] can't get log version ${version}, the latest log version is ${changelog.entries[0].version}`
+          )
+        }
 
         if (validateEntry) {
           logs.push({
@@ -109,6 +118,10 @@ export const readChangelogOfVersion = (
             ].map(comment => comment.comment)
           })
         }
+      } else {
+        core.info(
+          `[info] can't get changelog of ${entry.path}/${entry.fileName}`
+        )
       }
     })
   }
