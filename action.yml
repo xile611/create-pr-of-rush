@@ -1,5 +1,5 @@
 name: 'Collect changelog of rush'
-description: 'Collect changelog from all the changlog file of a rush monorepo package, by default all the changlog of package which has shouldPublish = true will be collected'
+description: 'Collect changelog from all the changlog file of a rush monorepo package'
 author: 'xile611'
 inputs:
   version:
@@ -15,6 +15,12 @@ inputs:
   tags:
     required: false
     description: The tags of packages, use comma to join multi package tag
+outputs:
+  markdown: # id of the output
+    description: 'the markdown of changlog'
 runs:
   using: 'node16'
   main: 'dist/index.js'
+branding:
+  icon: 'align-left'
+  color: 'yellow'
