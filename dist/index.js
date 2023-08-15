@@ -134,7 +134,7 @@ const readChangelogOfVersion = (version, rushPath, filterTags, blackList) => {
             .join('\n')}`);
         // eslint-disable-next-line github/array-foreach
         changlogInfos.forEach(entry => {
-            var _a, _b, _c, _d, _e, _f, _g;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
             const changelog = (0, exports.findJsonFile)(entry.path, entry.fileName);
             if (changelog &&
                 changelog.name &&
@@ -151,9 +151,10 @@ const readChangelogOfVersion = (version, rushPath, filterTags, blackList) => {
                     logs.push({
                         pkgName: changelog.name,
                         comments: [
-                            ...((_c = (_b = validateEntry.comments) === null || _b === void 0 ? void 0 : _b.patch) !== null && _c !== void 0 ? _c : []),
-                            ...((_e = (_d = validateEntry.comments) === null || _d === void 0 ? void 0 : _d.minor) !== null && _e !== void 0 ? _e : []),
-                            ...((_g = (_f = validateEntry.comments) === null || _f === void 0 ? void 0 : _f.major) !== null && _g !== void 0 ? _g : [])
+                            ...((_c = (_b = validateEntry.comments) === null || _b === void 0 ? void 0 : _b.none) !== null && _c !== void 0 ? _c : []),
+                            ...((_e = (_d = validateEntry.comments) === null || _d === void 0 ? void 0 : _d.patch) !== null && _e !== void 0 ? _e : []),
+                            ...((_g = (_f = validateEntry.comments) === null || _f === void 0 ? void 0 : _f.minor) !== null && _g !== void 0 ? _g : []),
+                            ...((_j = (_h = validateEntry.comments) === null || _h === void 0 ? void 0 : _h.major) !== null && _j !== void 0 ? _j : [])
                         ].map(comment => comment.comment)
                     });
                 }
@@ -216,9 +217,17 @@ const convertLogsToMarkdown = (logs) => {
         // eslint-disable-next-line github/array-foreach
         logs.forEach(log => {
             if (log.comments && log.comments.length) {
+                const prev = {};
                 // eslint-disable-next-line github/array-foreach
                 log.comments.forEach(comment => {
-                    const matches = reg.exec(comment);
+                    const formatComment = comment
+                        .replace(/^[\s\n]+/, '')
+                        .replace(/([\s\n]+)$/g, '');
+                    if (prev[formatComment]) {
+                        return;
+                    }
+                    prev[formatComment] = true;
+                    const matches = reg.exec(formatComment);
                     if (matches) {
                         const type = matches[1];
                         const scope = matches[3];

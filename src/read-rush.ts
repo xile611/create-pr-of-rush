@@ -22,6 +22,7 @@ interface RushChangelogJson {
     tag: string
     date: string
     comments?: {
+      none?: CommentItem[]
       patch?: CommentItem[]
       minor?: CommentItem[]
       major?: CommentItem[]
@@ -112,6 +113,7 @@ export const readChangelogOfVersion = (
           logs.push({
             pkgName: changelog.name,
             comments: [
+              ...(validateEntry.comments?.none ?? []),
               ...(validateEntry.comments?.patch ?? []),
               ...(validateEntry.comments?.minor ?? []),
               ...(validateEntry.comments?.major ?? [])
@@ -185,9 +187,19 @@ export const convertLogsToMarkdown = (logs: LogItem[]): string => {
     // eslint-disable-next-line github/array-foreach
     logs.forEach(log => {
       if (log.comments && log.comments.length) {
+        const prev: Record<string, boolean> = {}
         // eslint-disable-next-line github/array-foreach
         log.comments.forEach(comment => {
-          const matches = reg.exec(comment)
+          const formatComment = comment
+            .replace(/^[\s\n]+/, '')
+            .replace(/([\s\n]+)$/g, '')
+
+          if (prev[formatComment]) {
+            return
+          }
+          prev[formatComment] = true
+
+          const matches = reg.exec(formatComment)
 
           if (matches) {
             const type = matches[1]
